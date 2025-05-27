@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            width: 400px;
+            height: 500px;
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fa;
+        }
+        .header {
+            background: #ff4500;
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header h2 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        /* Tab Navigation */
+        .tab-nav {
+            display: flex;
+            background: white;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            color: #6c757d;
+            transition: all 0.2s;
+            border-bottom: 3px solid transparent;
+        }
+        .tab-btn.active {
+            color: #ff4500;
+            border-bottom-color: #ff4500;
+            background: #fff5f0;
+        }
+        .tab-btn:hover:not(.active) {
+            background: #f8f9fa;
+            color: #495057;
+        }
+
+        /* Tab Content */
+        .tab-content {
+            padding: 20px;
+            height: calc(100% - 120px);
+            overflow-y: auto;
+        }
+        .tab-pane {
+            display: none;
+        }
+        .tab-pane.active {
+            display: block;
+        }
+
+        /* Process Tab Styles */
+        .process-step {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-left: 4px solid #dee2e6;
+        }
+        .process-step.completed {
+            border-left-color: #28a745;
+        }
+        .process-step.processing {
+            border-left-color: #ffc107;
+            animation: pulse 2s infinite;
+        }
+        .process-step.error {
+            border-left-color: #dc3545;
+        }
+        .step-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .step-icon {
+            margin-right: 8px;
+            font-size: 16px;
+        }
+        .step-title {
+            font-weight: 600;
+            color: #212529;
+        }
+        .step-content {
+            font-size: 13px;
+            color: #6c757d;
+            line-height: 1.4;
+            max-height: 60px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .step-content.expanded {
+            max-height: none;
+        }
+        .expand-btn {
+            color: #ff4500;
+            cursor: pointer;
+            font-size: 12px;
+            text-decoration: underline;
+            margin-top: 5px;
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 12px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        .generate-btn:hover {
+            background: #218838;
+        }
+        .generate-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+
+        /* Settings Tab Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #212529;
+        }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        .form-group textarea {
+            height: 80px;
+            resize: vertical;
+        }
+        .save-btn {
+            width: 100%;
+            padding: 12px;
+            background: #ff4500;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        .save-btn:hover {
+            background: #e03d00;
+        }
+
+        .status {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 13px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .info-box {
+            background: #e7f3ff;
+            border: 1px solid #b3d7ff;
+            border-radius: 6px;
+            padding: 12px;
+            margin-top: 15px;
+            font-size: 12px;
+            color: #004085;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h2>🤖 Reddit AI Assistant</h2>
+</div>
+
+<div class="tab-nav">
+    <button class="tab-btn active" data-tab="process">📊 Process</button>
+    <button class="tab-btn" data-tab="settings">⚙️ Settings</button>
+</div>
+
+<div class="tab-content">
+    <!-- Process Tab -->
+    <div id="process-tab" class="tab-pane active">
+        <div class="process-step" id="step-detect">
+            <div class="step-header">
+                <span class="step-icon">🔍</span>
+                <span class="step-title">Phát hiện Reddit Post</span>
+            </div>
+            <div class="step-content" id="step-detect-content">
+                Đang kiểm tra trang hiện tại...
+            </div>
+        </div>
+
+        <div class="process-step" id="step-title">
+            <div class="step-header">
+                <span class="step-icon">📝</span>
+                <span class="step-title">Lấy Tiêu đề</span>
+            </div>
+            <div class="step-content" id="step-title-content">
+                Chờ phát hiện post...
+            </div>
+            <div class="expand-btn" id="expand-title" style="display: none;">Xem đầy đủ</div>
+        </div>
+
+        <div class="process-step" id="step-content">
+            <div class="step-header">
+                <span class="step-icon">📄</span>
+                <span class="step-title">Lấy Nội dung</span>
+            </div>
+            <div class="step-content" id="step-content-content">
+                Chờ lấy tiêu đề...
+            </div>
+            <div class="expand-btn" id="expand-content" style="display: none;">Xem đầy đủ</div>
+        </div>
+
+        <div class="process-step" id="step-ai">
+            <div class="step-header">
+                <span class="step-icon">🤖</span>
+                <span class="step-title">Gợi ý AI</span>
+            </div>
+            <div class="step-content" id="step-ai-content">
+                Chờ hoàn thành các bước trước...
+            </div>
+            <div class="expand-btn" id="expand-ai" style="display: none;">Xem đầy đủ</div>
+        </div>
+
+        <button class="generate-btn" id="generateBtn" disabled>
+            🚀 Tạo Gợi ý AI
+        </button>
+    </div>
+
+    <!-- Settings Tab -->
+    <div id="settings-tab" class="tab-pane">
+        <div class="form-group">
+            <label for="apiKey">Gemini API Key:</label>
+            <input type="password" id="apiKey" placeholder="Nhập Gemini API key của bạn">
+        </div>
+
+        <div class="form-group">
+            <label for="promptTemplate">Template Prompt:</label>
+            <textarea id="promptTemplate" placeholder="Tùy chỉnh prompt cho AI...">Bạn là một người dùng Reddit thông minh và có hiểu biết. Hãy đưa ra một comment phù hợp cho bài đăng sau:
+
+Tiêu đề: "{title}"
+Nội dung: "{content}"
+
+Yêu cầu:
+- Comment bằng tiếng Việt
+- Tự nhiên, không giống AI
+- Thể hiện sự hiểu biết và empathy
+- Tránh phán xét, tập trung vào chia sẻ kinh nghiệm hoặc góc nhìn
+- Độ dài 1-3 câu
+- Không sử dụng emoji</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="responseLength">Độ dài response:</label>
+            <select id="responseLength">
+                <option value="short">Ngắn (1-2 câu)</option>
+                <option value="medium" selected>Trung bình (2-3 câu)</option>
+                <option value="long">Dài (3-5 câu)</option>
+            </select>
+        </div>
+
+        <button class="save-btn" id="saveBtn">💾 Lưu Cấu Hình</button>
+
+        <div id="status"></div>
+
+        <div class="info-box">
+            <strong>💡 Hướng dẫn:</strong><br>
+            • Lấy API key tại: <strong>makersuite.google.com</strong><br>
+            • Truy cập Reddit post để xem process<br>
+            • Tùy chỉnh prompt theo phong cách riêng<br>
+            • Sử dụng {title} và {content} trong template
+        </div>
+    </div>
+</div>
+
+<script src="popup.js"></script>
+</body>
+</html>
